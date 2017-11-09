@@ -347,18 +347,83 @@ Get call details belonging to call specified by the call id.
 
 HTTP Code: 200
 
-`{ "success":  }`
+`{
+	"call": {
+		"id": "3507",
+		"sid": "CA919cfb2e75a8eacafda5f4432caa1589",
+		"org_id": "779",
+		"time_date": "2017-10-11 09:19:07",
+		"duration": "1098",
+		"rating": "5",
+		"feedback": "Nice one",
+		"caller_name": "Ravi",
+		"caller_phone": null,
+		"caller_message": "He wasn't sure what he wanted so I hung up on him, not really, I just said that someone would call him back.",
+		"rule_title": "Looking for Telephone Answering Services",
+		"transaction_id": "2846",
+		"amount": "15.05",
+		"date": "11th Oct / 09:19 am",
+		"time": "09:19 am"
+	},
+	"pass": 1,
+	"success": true
+}`
 
 ### GET /api/v2/account/{org_id}/call/{call_sid}/recording - Get call recording url
 
 Get the url for the recording of the call defined by the call sid.
 
+`{
+	"success": true,
+	"pass": 1,
+	"recordings": [
+		"https://api.twilio.com/2010-04-01/Accounts/AC99c96423dfa89b9d38e96f22a6434f78/Calls/CA919cfb2e75a8eacafda5f4432caa1589/Recordings/REa2100d7594515ef25d8c247bfbc701f2"
+	]
+}`
+
 ### GET /api/v2/account/{org_id}/recent_calls - Get recent calls
 
 Get up to last 200 calls for organization specified by org id.
 
-### GET /api/v2/account/{org_id}/calls/{user_id} - Get user calls
-
-Get the last 200 calls belonging to user specified by user id. Note that calls can only be accessed with an access token belonging to specified user.
-
-### GET /api/v2/account/{org_id}/weekly_call_count - Get weekly call count
+`{
+	"success": true,
+	"pass": 1,
+	"calls": [
+		{
+			"call_id": "3307",
+			"caller_name": "Dani",
+			"caller_phone": "0401333800",
+			"time_date": "2017-11-08 21:41:45",
+			"rule_title": "Looking for Telephone Answering Services",
+			"date": "8th Nov / 09:41 pm",
+			"time": "09:41 pm"
+		},
+		{
+			"call_id": "399",
+			"caller_name": "Dani",
+			"caller_phone": "0401333800",
+			"time_date": "2017-11-08 21:11:05",
+			"rule_title": "Test Calls for Dani",
+			"date": "8th Nov / 09:11 pm",
+			"time": "09:11 pm"
+		},
+		{
+			"call_id": "365",
+			"caller_name": "No name given",
+			"caller_phone": "No number given",
+			"time_date": "2017-11-08 11:05:33",
+			"rule_title": "Telemarketing / Cold Calls",
+			"date": "8th Nov / 11:05 am",
+			"time": "11:05 am"
+		},
+		{
+			"call_id": "351",
+			"caller_name": "Test",
+			"caller_phone": " test",
+			"time_date": "2017-11-07 16:10:36",
+			"rule_title": "Test Calls for Dani",
+			"date": "7th Nov / 04:10 pm",
+			"time": "04:10 pm"
+		}
+  ]
+},`
