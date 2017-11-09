@@ -4,6 +4,15 @@
 
 Welcome to the documentation for the OfficeEarth API. This REST API can be used to control all aspects of your account with simple POST and GET requests to our site at https://oe.services. All of the endpoints below should be appended to that base url, for example, to hit the token endpoint you would make a POST request to https://oe.services/api/token. That same structure can be used for all of the endpoints listed below. Some endpoints will need to receive the auth token (which is received from a POST request to /api/token) in the auth header. You will need to add a header with Key/Name Authorization and a value of Bearer { auth_token } where { auth_token } is the token received from the request.
 
+## Security
+
+All endpoints (unless specified) require a token to be passed in the Authorization header of the request. These endpoints all have the possibility of returning either a 401 status code with an invalid permissions error or a 403 status code with an invalid credentials error. The 401 status code means you do not have permissions to access the resources that were specified. You're either using the wrong auth token or attempting to access a resource with the wrong id. The 403 status code means you're not sending a token. This probably means you forgot to send the token or that it is corrupted. Be sure the header is formatted so that the key is "Authorization" and the value is "Bearer {token}", ensuring a space between the word bearer and the actual token.
+
+#### Unsecured endpoints
+
+- /api/account
+- /api/token
+
 ## Endpoints
 
 ### POST /api/account - Create new account
@@ -67,7 +76,9 @@ HTTP Code: 403
 
 `{ "success": false, "error": "Invalid Credentials" }`
 
-### GET /api/email/{ email } - Check if email is available
+*Here invalid credentials means that the email address or password are incorrect, as stated above, this route does not need a token to access.
+
+### GET /api/email/{email} - Check if email is available
 
 Returns a response stating whether or not the email sent in the request is available to be used for creating a new account or not. True means the email is available and false means it is already taken.
 
@@ -142,7 +153,9 @@ HTTP Code: 200
 
 `{ "success": false, "error": "Failed to reset password" }`
 
-### POST /api/account/{ org_id }/user/ - Add new user
+### POST /api/account/{org_id}/user/ - Add new user
+
+*The trailing backslash is not a mistake, if you omit it, then endpoint will not work. 
 
 Adds a new user to organization specified by the OrganizationUnitID parameter and org_id parameter in the url. A valid email which has not been used for any other OfficeEarth users is required for the setup to be successful. Checking whether the email is taken or not is possible with the email endpoint. 
 
@@ -205,7 +218,7 @@ HTTP Code: 412
 
 `{ "success": false, "errors": { "OrganizationUnitID": [ "OrganizationUnitID is required" ] } }`
 
-### POST /api/account/{ org_id }/user/{ id } - Update user's details
+### POST /api/account/{org_id}/user/{id} - Update user's details
 
 Updates user's details with the values provided presuming they are all in the correct format. If any values are in an illegal format the whole update will fail and nothing will be changed. Any combination of parameters may be sent with the AddressID being required and the other parameters needing to be in the correct format as specified below.
 
@@ -225,7 +238,7 @@ Gender signifies a user's gender and the two options are M for a male or F for a
 
 Send_SMS and Phone_Online are both parameters which also only accept a 1 letter value. The value may be Y for allowing SMSes and having their phone online or N for being offline and not receiving SMSes.
 
-If the user wishes to be available all the time for transfers, you may send the value off to Transfer_Off_Time and any hour you'd like to Trasnfer_On_Time and their transfers will be on 24 hours a day. The format of hours accepted by the Transfer_On_Time and Transfer_Off_Time parameters are: 01:00 for 1am or 24:00 for 12am. Any hour value between 01 and 24 and minute value between 00 and 60 may be used.
+If the user wishes to be available all the time for transfers, you may send the value off to Transfer_Off_Time and any hour you'd like to Transfer_On_Time and their transfers will be on 24 hours a day. The format of hours accepted by the Transfer_On_Time and Transfer_Off_Time parameters are: 01:00 for 1am or 24:00 for 12am. Any hour value between 01 and 24 and minute value between 00 and 60 may be used.
 
 The Time_Code signifies the internal code used by OfficeEarth for timezones and must be an integer value corresponding to that value. If you would like a timezone not listed here please contact us and we will provide you with the relevant time code.
 
@@ -271,3 +284,81 @@ HTTP Code: 412
 HTTP Code: 404
 
 `{ "success": false, "error": "User not found" }`
+
+### GET /api/account/{org_id}/users - Get account users
+
+Retrieves list of users belonging to organization defined by org id.
+
+#### Responses
+
+##### Success
+
+HTTP Code: 200
+
+`{ "success": true, "users": [{ "FirstName": "First", "LastName": "Last", "Email": "mail@gmail.com", "Gender": "M", "Phone_Online": "Y", "Send_SMS": "N", "TimeZone": "Australia/Sydney" }] }`
+
+### DELETE /api/account/{org_id}/user/{user_id} - Delete user
+
+Deletes user belonging to organization specified by org id with user id.
+
+#### Responses
+
+##### Success
+
+HTTP Code: 200
+
+`{ "success": true }`
+
+### GET /api/v2/account/{org_id}/call/{call_id}/form_data - Get call form data
+
+Returns form data for the specified call id with all the filled out values.
+
+#### Responses
+
+##### Success
+
+HTTP Code: 200
+
+`{ "success": true, "call_form_data": { "call_id": "1423", "Title": "Custom Form", "Data": { "response": [{ "ID": "43", "Title": "Location", "Value": "None", "API_Feild_ID": "3" }, { "ID": "45", "Title": "Name", "Value": "Jeffrey", "API_Feild_ID": "" }] } } }`
+
+*Feild is not a spelling error, that is unfortunately the field name.
+
+### GET /api/v2/account/{org_id}/calls - Get call history
+
+Get calls made to organization along with full details for the past month.
+
+#### Responses
+
+##### Success
+
+HTTP Code: 200
+
+`{ "success": true, "calls": [{ "id": 1241, "caller_name": "Terry", "caller_phone": "Not given", "duration", "31", "time_date": "2017-05-22 15:34:25" }] }`
+
+## Work In Progress
+
+### GET /api/v2/account/{org_id}/calls/{call_id} - Get call details
+
+Get call details belonging to call specified by the call id.
+
+#### Responses
+
+##### Success
+
+HTTP Code: 200
+
+`{ "success":  }`
+
+### GET /api/v2/account/{org_id}/call/{call_sid}/recording - Get call recording url
+
+Get the url for the recording of the call defined by the call sid.
+
+### GET /api/v2/account/{org_id}/recent_calls - Get recent calls
+
+Get up to last 200 calls for organization specified by org id.
+
+### GET /api/v2/account/{org_id}/calls/{user_id} - Get user calls
+
+Get the last 200 calls belonging to user specified by user id. Note that calls can only be accessed with an access token belonging to specified user.
+
+### GET /api/v2/account/{org_id}/weekly_call_count - Get weekly call count
