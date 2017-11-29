@@ -30,6 +30,7 @@ Creates a new account with the parameters specified in post request. When loggin
 | password      | string     | Password for primary user                                 | Yes          |
 | recaptcha     | string     | Recaptcha response from google for recaptcha verification | Yes          |
 | referral_code | string     | Referral code used when signing up                        | No           |
+| ref_site      | string     | Tag for referring site                                    | No           |
 
 #### Responses
 
